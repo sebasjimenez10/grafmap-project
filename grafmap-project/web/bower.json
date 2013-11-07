@@ -1,0 +1,25 @@
+{
+  "name": "Los 4 fantásticos y SS",
+  "version": "0.0.0",
+  "homepage": "https://github.com/sebasjimenez10/grafmap-project",
+  "authors": [
+    "Esteba Arango <marranoparael31@gmail.com>",
+    "Sebastian Jimenez",
+    "Johana Lozano",
+    "Erika Gomez"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.0.3",
+    "font-awesome": "~4.0.3",
+    "bootstrap": "~3.0.2"
+  }
+}
