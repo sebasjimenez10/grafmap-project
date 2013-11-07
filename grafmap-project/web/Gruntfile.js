@@ -26,6 +26,7 @@ module.exports = function(grunt) {
           cssDir: 'assets/css',
           imagesDir: 'assets/img',
           fontsDir: 'assets/fonts',
+          importPath: 'bower_components',
           httpPath: "/",
           relativeAssets: true,
           boring: true,
