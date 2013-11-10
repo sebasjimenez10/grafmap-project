@@ -19,10 +19,18 @@
     <![endif]-->    
 
     <div id="container">
-      <article>
-        <p>Finding your location: <span id="status">checking...</span></p>
-      </article>    
-      <div id="map"></div>
+
+      <div class="row">
+        <div class="col-md-2">
+          <article class="top_nav">
+            <fb:login-button show-faces="true" width="200" max-rows="1"></fb:login-button>
+            <p>Finding your location: <span id="status">checking...</span></p>
+          </article>          
+        </div>
+        <div class="col-md-10">
+          <div id="map"></div>
+        </div>        
+      </div>
     </div>
 
     <script src="/bower_components/jquery/jquery.js"></script>
