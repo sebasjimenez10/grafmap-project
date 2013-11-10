@@ -1,3 +1,36 @@
+testAPI = ->
+  console.log "Welcome!  Fetching your information.... "
+  FB.api "/me", (response) ->
+    console.log "Good to see you, " + response.name + "."
+
+window.fbAsyncInit = ->
+  FB.init
+    appId: "1418352478394130"
+    channelUrl: "//connect.facebook.net/en_US/all.js"
+    status: true
+    cookie: true
+    xfbml: true
+
+  FB.Event.subscribe "auth.authResponseChange", (response) ->
+    if response.status is "connected"
+      testAPI()
+    else if response.status is "not_authorized"
+      FB.login()
+    else
+      FB.login()
+
+
+((d) ->
+  js = undefined
+  id = "facebook-jssdk"
+  ref = d.getElementsByTagName("script")[0]
+  return  if d.getElementById(id)
+  js = d.createElement("script")
+  js.id = id
+  js.async = true
+  js.src = "//connect.facebook.net/en_US/all.js"
+  ref.parentNode.insertBefore js, ref
+) document
 class GrafMap
   constructor: () ->
     if navigator.geolocation
@@ -38,3 +71,9 @@ $ ->
   grafmap = new GrafMap
 # console.log(arguments);
 
+
+# Calculate the top offset
+$(window).resize(->
+  h = $(window).height()
+  $("#map").css "height", h
+).resize()
