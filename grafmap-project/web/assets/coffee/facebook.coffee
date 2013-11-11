@@ -1,8 +1,3 @@
-testAPI = ->
-  console.log "Welcome!  Fetching your information.... "
-  FB.api "/me", (response) ->
-    console.log "Good to see you, " + response.name + "."
-
 window.fbAsyncInit = ->
   FB.init
     appId: "1418352478394130"
@@ -13,7 +8,7 @@ window.fbAsyncInit = ->
 
   FB.Event.subscribe "auth.authResponseChange", (response) ->
     if response.status is "connected"
-      testAPI()
+      onFBConnected()
     else if response.status is "not_authorized"
       FB.login()
     else

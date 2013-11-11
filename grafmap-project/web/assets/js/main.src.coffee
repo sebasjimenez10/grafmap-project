@@ -1,8 +1,3 @@
-testAPI = ->
-  console.log "Welcome!  Fetching your information.... "
-  FB.api "/me", (response) ->
-    console.log "Good to see you, " + response.name + "."
-
 window.fbAsyncInit = ->
   FB.init
     appId: "1418352478394130"
@@ -13,7 +8,7 @@ window.fbAsyncInit = ->
 
   FB.Event.subscribe "auth.authResponseChange", (response) ->
     if response.status is "connected"
-      testAPI()
+      onFBConnected()
     else if response.status is "not_authorized"
       FB.login()
     else
@@ -32,13 +27,19 @@ window.fbAsyncInit = ->
   ref.parentNode.insertBefore js, ref
 ) document
 class GrafMap
+
+  found: false
+  coords: null
+  access_token: null
+
   constructor: () ->
-    if navigator.geolocation
-      navigator.geolocation.getCurrentPosition @success, @error
+    if navigator.geolocation 
+      navigator.geolocation.getCurrentPosition @navigatorSuccess, @navigatorError
     else
       alert "Oops, your browser doesn't support geo-location."
 
-  success:(position) ->
+  navigatorSuccess:(position) =>
+    @coords = position.coords
     s = document.querySelector("#status")
     
     # not sure why we're hitting this twice in FF, I think it's to do with a cached result coming back    
@@ -63,17 +64,40 @@ class GrafMap
       title: "You are here! (at least within a " + position.coords.accuracy + " meter radius)"
     )
 
-  error: (msg) ->
+    @found = true
+    @getNearbyPlaces() if @access_token
+
+  navigatorError: (msg) ->
     s = document.querySelector("#status")
     s.innerHTML = (if typeof msg is "string" then msg else "failed")
     s.className = "fail"
+
+  getNearbyPlaces: () =>
+    console.log 'Getting nearby places...'
+    $.get "https://graph.facebook.com/search",
+      type: 'place'
+      fields: 'category,picture,name,can_post,phone,description,location'
+      center: "#{@coords.latitude},#{@coords.longitude}"
+      distance: 150
+      limit: 25
+      offset: 0
+      access_token: @access_token
+    , (data) ->
+      console.log data
+grafmap = null
+
 $ ->
   grafmap = new GrafMap
-# console.log(arguments);
-
 
 # Calculate the top offset
 $(window).resize(->
   h = $(window).height()
   $("#map").css "height", h
 ).resize()
+
+onFBConnected = ->
+  console.log "Welcome!  Fetching your information.... "
+  grafmap.access_token = FB.getAuthResponse()['accessToken']
+  grafmap.getNearbyPlaces() if grafmap.found
+  FB.api "/me", (response) ->
+    console.log "Good to see you, " + response.name + "."
