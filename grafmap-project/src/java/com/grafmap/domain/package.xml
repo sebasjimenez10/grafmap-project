@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<package id="application">
+    <description>
+        This package will contain the domain model for the specified user
+        story. Business logic included here.
+    </description>
+</package>
