@@ -43,8 +43,11 @@
 
     GrafMap.prototype.access_token = null;
 
+    GrafMap.prototype.map = null;
+
     function GrafMap() {
       this.getNearbyPlaces = __bind(this.getNearbyPlaces, this);
+      this.addNearbyPlace = __bind(this.addNearbyPlace, this);
       this.navigatorSuccess = __bind(this.navigatorSuccess, this);
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(this.navigatorSuccess, this.navigatorError);
@@ -54,7 +57,7 @@
     }
 
     GrafMap.prototype.navigatorSuccess = function(position) {
-      var latlng, map, marker, myOptions, s;
+      var latlng, marker, myOptions, s;
       this.coords = position.coords;
       s = document.querySelector("#status");
       if (s.className === "success") {
@@ -72,11 +75,12 @@
         },
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
-      map = new google.maps.Map(document.getElementById("map"), myOptions);
+      this.map = new google.maps.Map(document.getElementById("map"), myOptions);
       marker = new google.maps.Marker({
         position: latlng,
-        map: map,
-        title: "You are here! (at least within a " + position.coords.accuracy + " meter radius)"
+        map: this.map,
+        title: "You are here! (at least within a " + position.coords.accuracy + " meter radius)",
+        animation: google.maps.Animation.DROP
       });
       this.found = true;
       if (this.access_token) {
@@ -91,7 +95,26 @@
       return s.className = "fail";
     };
 
+    GrafMap.prototype.addNearbyPlace = function(place) {
+      var contentHtmlString, infowindow, latlng, marker;
+      console.log(place);
+      contentHtmlString = "<div class=\"info-window\">\n  <div class=\"content-frame\">\n    <h3>" + place.name + "</h3>\n    <p>" + place.description + "</p>\n  </div>\n</div>";
+      latlng = new google.maps.LatLng(place.location.latitude, place.location.longitude);
+      marker = new google.maps.Marker({
+        position: latlng,
+        map: this.map,
+        animation: google.maps.Animation.DROP
+      });
+      infowindow = new google.maps.InfoWindow({
+        content: contentHtmlString
+      });
+      return google.maps.event.addListener(marker, "click", function() {
+        return infowindow.open(this.map, marker);
+      });
+    };
+
     GrafMap.prototype.getNearbyPlaces = function() {
+      var _this = this;
       console.log('Getting nearby places...');
       return $.get("https://graph.facebook.com/search", {
         type: 'place',
@@ -102,7 +125,15 @@
         offset: 0,
         access_token: this.access_token
       }, function(data) {
-        return console.log(data);
+        var place, _i, _len, _ref, _results;
+        console.log(data);
+        _ref = data.data;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          place = _ref[_i];
+          _results.push(_this.addNearbyPlace(place));
+        }
+        return _results;
       });
     };
 

@@ -31,6 +31,7 @@ class GrafMap
   found: false
   coords: null
   access_token: null
+  map: null
 
   constructor: () ->
     if navigator.geolocation 
@@ -57,11 +58,12 @@ class GrafMap
 
       mapTypeId: google.maps.MapTypeId.ROADMAP
 
-    map = new google.maps.Map(document.getElementById("map"), myOptions)
+    @map = new google.maps.Map(document.getElementById("map"), myOptions)
     marker = new google.maps.Marker(
       position: latlng
-      map: map
+      map: @map
       title: "You are here! (at least within a " + position.coords.accuracy + " meter radius)"
+      animation: google.maps.Animation.DROP
     )
 
     @found = true
@@ -71,6 +73,31 @@ class GrafMap
     s = document.querySelector("#status")
     s.innerHTML = (if typeof msg is "string" then msg else "failed")
     s.className = "fail"
+
+  addNearbyPlace: (place) =>
+    console.log place
+
+    contentHtmlString = """
+                        <div class="info-window">
+                          <div class="content-frame">
+                            <h3>#{place.name}</h3>
+                            <p>#{place.description}</p>
+                          </div>
+                        </div>
+                        """
+
+    latlng = new google.maps.LatLng(place.location.latitude, place.location.longitude)    
+    marker = new google.maps.Marker(
+      position: latlng
+      map: @map
+      animation: google.maps.Animation.DROP
+    )
+    # Create info window
+    infowindow = new google.maps.InfoWindow(content: contentHtmlString)
+    google.maps.event.addListener marker, "click", ->
+      infowindow.open @map, marker
+
+
 
   getNearbyPlaces: () =>
     console.log 'Getting nearby places...'
@@ -82,8 +109,10 @@ class GrafMap
       limit: 25
       offset: 0
       access_token: @access_token
-    , (data) ->
+    , (data) =>
       console.log data
+      @addNearbyPlace place for place in data.data
+
 grafmap = null
 
 $ ->
