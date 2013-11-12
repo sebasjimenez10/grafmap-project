@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<package id="application">
-    <description>
-        Implementation of the application layer.
-    </description>
-</package>
