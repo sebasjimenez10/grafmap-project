@@ -11,9 +11,8 @@ import java.util.ArrayList;
  * @author Sebastian
  */
 public interface FavoritePlaceRepository {
-    
-    public void store( FavoritePlace favoritePlace);
-    
+
+    public void store(FavoritePlace favoritePlace);
+
     public ArrayList<FavoritePlace> retriveAllByUser(String userId);
-    
 }

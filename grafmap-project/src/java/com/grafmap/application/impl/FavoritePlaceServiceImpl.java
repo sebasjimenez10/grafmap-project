@@ -7,6 +7,7 @@ package com.grafmap.application.impl;
 import com.grafmap.application.FavoritePlaceService;
 import com.grafmap.domain.FavoritePlace;
 import com.grafmap.domain.FavoritePlaceRepository;
+import com.grafmap.infrastructure.persistence.FavoritePlacePersistence;
 import com.grafmap.infrastructure.persistence.FavoritePlaceRepositoryImpl;
 import java.util.ArrayList;
 import javax.ws.rs.Consumes;
@@ -40,8 +41,6 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
 
             favoritePlaceObj.setId(jFavoritePlace.getString("id"));
             favoritePlaceObj.setUserId(jFavoritePlace.getString("user_id"));
-            favoritePlaceObj.setName(jFavoritePlace.getString("name"));
-            favoritePlaceObj.setCategory(jFavoritePlace.getString("category"));
             favoritePlaceObj.setLatitud(jFavoritePlace.getString("latitud"));
             favoritePlaceObj.setLongitud(jFavoritePlace.getString("longitud"));
 
@@ -63,7 +62,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
 
             System.out.println("User: " + user);
 
-            FavoritePlaceRepository fpRepo = new FavoritePlaceRepositoryImpl();
+            FavoritePlaceRepository fpRepo = new FavoritePlacePersistence();
             ArrayList<FavoritePlace> retriveAllByUser = fpRepo.retriveAllByUser(user);
 
             JSONArray responseArray = new JSONArray();
@@ -81,9 +80,9 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
                 responseArray.put(favObj);
 
             }
-            
+
             return responseArray.toString();
-            
+
         } catch (Exception e) {
             JSONObject jsonError = new JSONObject();
             jsonError.put("error", e.getMessage());

@@ -4,25 +4,25 @@
  */
 package com.grafmap.domain;
 
-import com.grafmap.infrastructure.persistence.FavoritePlaceRepositoryImpl;
+import com.grafmap.infrastructure.persistence.FavoritePlacePersistence;
+//import com.grafmap.infrastructure.persistence.FavoritePlaceRepositoryImpl;
 
 /**
  *
  * @author Sebastian
  */
 public class FavoritePlace {
-    
+
     private String userId;
     private String category;
     private String id;
     private String latitud;
     private String longitud;
     private String name;
-    
     private FavoritePlaceRepository fpRepo;
 
     public FavoritePlace() {
-        fpRepo = new FavoritePlaceRepositoryImpl();
+        fpRepo = new FavoritePlacePersistence();
     }
 
     public String getUserId() {
@@ -76,5 +76,4 @@ public class FavoritePlace {
     public void store() {
         fpRepo.store(this);
     }
-    
 }
