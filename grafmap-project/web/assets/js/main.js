@@ -69,7 +69,7 @@
       myOptions = {
         zoom: 15,
         center: latlng,
-        mapTypeControl: true,
+        mapTypeControl: false,
         navigationControlOptions: {
           style: google.maps.NavigationControlStyle.SMALL
         },
@@ -106,13 +106,13 @@
         position: latlng,
         map: this.map,
         icon: {
-          path: fontawesome.markers.EXCLAMATION,
+          path: fontawesome.markers.STAR_EMPTY,
           scale: 0.5,
           strokeWeight: 0.2,
           strokeColor: 'black',
           strokeOpacity: 1,
-          fillColor: '#f8ae5f',
-          fillOpacity: 0.7
+          fillColor: '#D8432E',
+          fillOpacity: 0.8
         },
         animation: google.maps.Animation.DROP
       });
@@ -129,7 +129,7 @@
       console.log('Getting nearby places...');
       return $.get("https://graph.facebook.com/search", {
         type: 'place',
-        fields: 'category,picture,name,can_post,phone,description,location',
+        fields: 'category,picture,name,can_post,phone,description,location,link',
         center: "" + this.coords.latitude + "," + this.coords.longitude,
         distance: 150,
         limit: 25,
