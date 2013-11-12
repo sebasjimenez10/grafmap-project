@@ -69,7 +69,7 @@
                 {{truncate description 150}}
               </div>
               <footer>
-                <button data-place-id="{{id}}" data-latitude="{{location.latitude}}" data-longitude="{{location.longitude}}" type="button" class="btn btn-default favorite_button"><i class="fa fa-star-o"></i> Favorite</button>
+                <button data-place-id="{{id}}" data-latitude="{{location.latitude}}" data-longitude="{{location.longitude}}" type="button" class="btn btn-default favorite_button {{favoritedClass id}}" {{isDisable id}}>{{{favoritedText id}}}</button>
               </footer>              
             </div>          
           </div>
@@ -97,12 +97,5 @@
     <!-- endbuild -->
     <script src="assets/js/vendor/fontawesome-markers.js"></script>    
     <script src="assets/js/main.js"></script>
-
-    <script>
-        var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-        (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-        g.src='//www.google-analytics.com/ga.js';
-        s.parentNode.insertBefore(g,s)}(document,'script'));
-    </script>
   </body>
 </html>

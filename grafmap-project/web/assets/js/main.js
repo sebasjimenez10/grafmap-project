@@ -59,6 +59,7 @@
       this.favoritePlace = __bind(this.favoritePlace, this);
       this.getNearbyPlaces = __bind(this.getNearbyPlaces, this);
       this.setMyNearbyPlaces = __bind(this.setMyNearbyPlaces, this);
+      this.crateInfoWindow = __bind(this.crateInfoWindow, this);
       this.addNearbyPlace = __bind(this.addNearbyPlace, this);
       this.navigatorSuccess = __bind(this.navigatorSuccess, this);
       Messenger().post({
@@ -118,10 +119,7 @@
     };
 
     GrafMap.prototype.addNearbyPlace = function(place) {
-      var contentHtmlString, infowindow, latlng, marker, tempalteSource, template;
-      tempalteSource = $("#info-window-template").html();
-      template = Handlebars.compile(tempalteSource);
-      contentHtmlString = template(place);
+      var latlng, marker;
       latlng = new google.maps.LatLng(place.location.latitude, place.location.longitude);
       marker = new google.maps.Marker({
         position: latlng,
@@ -130,6 +128,14 @@
         animation: google.maps.Animation.DROP
       });
       this.markers[place.id] = marker;
+      return this.crateInfoWindow(place, marker);
+    };
+
+    GrafMap.prototype.crateInfoWindow = function(place, marker) {
+      var contentHtmlString, infowindow, tempalteSource, template;
+      tempalteSource = $("#info-window-template").html();
+      template = Handlebars.compile(tempalteSource);
+      contentHtmlString = template(place);
       infowindow = new google.maps.InfoWindow({
         content: contentHtmlString
       });
@@ -173,33 +179,39 @@
       });
     };
 
-    GrafMap.prototype.favoritePlace = function(obj) {
-      var marker, objToSend;
+    GrafMap.prototype.favoritePlace = function(obj, cb) {
+      var objToSend,
+        _this = this;
       objToSend = {
         id: "" + obj.placeId,
         user_id: this.userId,
         latitud: "" + obj.latitude,
         longitud: "" + obj.longitude
       };
-      $.ajax({
+      return $.ajax({
         type: 'POST',
         url: '/grafmap-project/webresources/favorite',
         data: JSON.stringify(objToSend),
         dataType: 'json',
         contentType: 'application/json',
         success: function(data) {
-          return console.log(data);
+          var marker;
+          console.log(data);
+          marker = _this.markers[obj.placeId];
+          marker.setIcon({
+            path: fontawesome.markers.STAR,
+            scale: 0.5,
+            strokeWeight: 0.8,
+            strokeColor: '#111',
+            strokeOpacity: 1,
+            fillColor: '#FFE168',
+            fillOpacity: 1
+          });
+          _this.myNearbyPlaces[obj.placeId] = objToSend;
+          if (cb) {
+            return cb();
+          }
         }
-      });
-      marker = this.markers[obj.placeId];
-      return marker.setIcon({
-        path: fontawesome.markers.STAR,
-        scale: 0.5,
-        strokeWeight: 0.8,
-        strokeColor: '#111',
-        strokeOpacity: 1,
-        fillColor: '#FFE168',
-        fillOpacity: 1
       });
     };
 
@@ -265,13 +277,17 @@
   });
 
   $(document).on('click', '.favorite_button', function(e) {
-    var obj;
+    var obj,
+      _this = this;
     obj = {
       placeId: $(this).data('place-id'),
       latitude: $(this).data('latitude'),
       longitude: $(this).data('longitude')
     };
-    return grafmap.favoritePlace(obj);
+    return grafmap.favoritePlace(obj, function() {
+      $(_this).html("<i class='fa fa-star'></i> Favorited");
+      return $(_this).attr('disabled', 'disabled');
+    });
   });
 
   String.prototype.truncate = function(n) {
@@ -283,6 +299,30 @@
       return str.truncate(len);
     } else {
       return '';
+    }
+  });
+
+  Handlebars.registerHelper("favoritedText", function(id) {
+    if (grafmap.myNearbyPlaces[id] != null) {
+      return "<i class='fa fa-star'></i> Favorited";
+    } else {
+      return "<i class='fa fa-star-o'></i> Favorite";
+    }
+  });
+
+  Handlebars.registerHelper("favoritedClass", function(id) {
+    if (grafmap.myNearbyPlaces[id] != null) {
+      return "favorited";
+    } else {
+      return "favorite";
+    }
+  });
+
+  Handlebars.registerHelper("isDisable", function(id) {
+    if (grafmap.myNearbyPlaces[id] != null) {
+      return "disabled='disabled'";
+    } else {
+      return "";
     }
   });
 

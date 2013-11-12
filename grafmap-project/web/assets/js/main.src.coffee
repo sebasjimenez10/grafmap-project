@@ -95,10 +95,6 @@ class GrafMap
 
   addNearbyPlace: (place) =>
 
-    tempalteSource = $("#info-window-template").html()
-    template = Handlebars.compile(tempalteSource)
-    contentHtmlString = template(place)
-
     latlng = new google.maps.LatLng(place.location.latitude, place.location.longitude)    
     marker = new google.maps.Marker(
       position: latlng
@@ -109,11 +105,16 @@ class GrafMap
 
     # Add to markers array
     @markers[place.id] = marker
+    @crateInfoWindow place, marker
 
+  crateInfoWindow: (place, marker) =>
+    tempalteSource = $("#info-window-template").html()
+    template = Handlebars.compile(tempalteSource)
+    contentHtmlString = template(place)
     # Create info window
     infowindow = new google.maps.InfoWindow(content: contentHtmlString)
     google.maps.event.addListener marker, "click", ->
-      infowindow.open @map, marker
+      infowindow.open @map, marker    
 
   setMyNearbyPlaces: (cb) =>
     $.get "/grafmap-project/webresources/favorite/#{@userId}", (data) =>
@@ -135,7 +136,7 @@ class GrafMap
     , (data) =>
       @addNearbyPlace place for place in data.data
 
-  favoritePlace: (obj) =>
+  favoritePlace: (obj,cb) =>
 
     objToSend = 
         id: "#{obj.placeId}"
@@ -149,19 +150,20 @@ class GrafMap
       data: JSON.stringify objToSend
       dataType: 'json'
       contentType: 'application/json'    
-      success: (data) ->
+      success: (data) =>
         console.log data
-
-    # Re-paint the marker
-    marker = @markers[obj.placeId]
-    marker.setIcon
-      path: fontawesome.markers.STAR
-      scale: 0.5
-      strokeWeight: 0.8
-      strokeColor: '#111'
-      strokeOpacity: 1
-      fillColor: '#FFE168'
-      fillOpacity: 1
+        # Re-paint the marker
+        marker = @markers[obj.placeId]
+        marker.setIcon
+          path: fontawesome.markers.STAR
+          scale: 0.5
+          strokeWeight: 0.8
+          strokeColor: '#111'
+          strokeOpacity: 1
+          fillColor: '#FFE168'
+          fillOpacity: 1
+        @myNearbyPlaces[obj.placeId] = objToSend
+        cb() if cb
 
   getIcon: (favorited) ->
     if favorited
@@ -217,15 +219,36 @@ $(document).on 'click', '.favorite_button', (e) ->
     placeId: $(this).data('place-id')
     latitude: $(this).data('latitude')
     longitude: $(this).data('longitude')
-  grafmap.favoritePlace(obj)
+  grafmap.favoritePlace obj, () =>
+    $(this).html("<i class='fa fa-star'></i> Favorited")
+    $(this).attr('disabled','disabled')
 String::truncate = (n) ->
   @substr(0, n - 1) + ((if @length > n then "..." else ""))
 
+
+# Handlebar helpers
 Handlebars.registerHelper "truncate", (str, len) ->
   if str?
     str.truncate(len)
   else
     ''
+Handlebars.registerHelper "favoritedText", (id) ->
+  if grafmap.myNearbyPlaces[id]?
+    "<i class='fa fa-star'></i> Favorited"
+  else
+    "<i class='fa fa-star-o'></i> Favorite"
+
+Handlebars.registerHelper "favoritedClass", (id) ->
+  if grafmap.myNearbyPlaces[id]?
+    "favorited"
+  else
+    "favorite"
+
+Handlebars.registerHelper "isDisable", (id) ->
+  if grafmap.myNearbyPlaces[id]?
+    "disabled='disabled'"
+  else
+    ""
 
 Messenger.options =
   extraClasses: "messenger-fixed messenger-on-top"
