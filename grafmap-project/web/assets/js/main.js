@@ -49,22 +49,31 @@
       this.getNearbyPlaces = __bind(this.getNearbyPlaces, this);
       this.addNearbyPlace = __bind(this.addNearbyPlace, this);
       this.navigatorSuccess = __bind(this.navigatorSuccess, this);
+      Messenger().post({
+        message: 'Finding your location...',
+        id: 'alerter',
+        type: 'info'
+      });
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(this.navigatorSuccess, this.navigatorError);
       } else {
-        alert("Oops, your browser doesn't support geo-location.");
+        Messenger().post({
+          message: "Oops, your browser doesn't support geo-location.",
+          id: 'alerter',
+          type: 'error'
+        });
       }
     }
 
     GrafMap.prototype.navigatorSuccess = function(position) {
-      var latlng, marker, myOptions, s;
+      var latlng, marker, myOptions;
+      Messenger().post({
+        message: 'We found you!',
+        id: 'alerter',
+        type: 'success',
+        showCloseButton: true
+      });
       this.coords = position.coords;
-      s = document.querySelector("#status");
-      if (s.className === "success") {
-        return;
-      }
-      s.innerHTML = "found you!";
-      s.className = "success";
       latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
       myOptions = {
         zoom: 15,
@@ -89,10 +98,11 @@
     };
 
     GrafMap.prototype.navigatorError = function(msg) {
-      var s;
-      s = document.querySelector("#status");
-      s.innerHTML = (typeof msg === "string" ? msg : "failed");
-      return s.className = "fail";
+      return Messenger().post({
+        message: 'Error trying to find your location...',
+        id: 'alerter',
+        type: 'error'
+      });
     };
 
     GrafMap.prototype.addNearbyPlace = function(place) {
@@ -182,6 +192,11 @@
   Handlebars.registerHelper("truncate", function(str, len) {
     return str.truncate(len);
   });
+
+  Messenger.options = {
+    extraClasses: "messenger-fixed messenger-on-top",
+    theme: "future"
+  };
 
 }).call(this);
 

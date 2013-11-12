@@ -34,19 +34,29 @@ class GrafMap
   map: null
 
   constructor: () ->
+
+    Messenger().post
+      message: 'Finding your location...'
+      id: 'alerter'
+      type: 'info'
+
     if navigator.geolocation 
       navigator.geolocation.getCurrentPosition @navigatorSuccess, @navigatorError
     else
-      alert "Oops, your browser doesn't support geo-location."
+      Messenger().post
+        message: "Oops, your browser doesn't support geo-location."
+        id: 'alerter'
+        type: 'error'
 
   navigatorSuccess:(position) =>
+
+    Messenger().post
+      message: 'We found you!'
+      id: 'alerter'
+      type: 'success'
+      showCloseButton: true
+
     @coords = position.coords
-    s = document.querySelector("#status")
-    
-    # not sure why we're hitting this twice in FF, I think it's to do with a cached result coming back    
-    return  if s.className is "success"
-    s.innerHTML = "found you!"
-    s.className = "success"
 
     latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
     myOptions =
@@ -70,9 +80,10 @@ class GrafMap
     @getNearbyPlaces() if @access_token
 
   navigatorError: (msg) ->
-    s = document.querySelector("#status")
-    s.innerHTML = (if typeof msg is "string" then msg else "failed")
-    s.className = "fail"
+    Messenger().post
+      message: 'Error trying to find your location...'
+      id: 'alerter'
+      type: 'error'
 
   addNearbyPlace: (place) =>
     console.log place
@@ -132,9 +143,13 @@ onFBConnected = ->
   grafmap.access_token = FB.getAuthResponse()['accessToken']
   grafmap.getNearbyPlaces() if grafmap.found
   FB.api "/me", (response) ->
-    console.log "Good to see you, " + response.name + "."
+    console.log "Good to see you, " + response.name + "."    
 String::truncate = (n) ->
   @substr(0, n - 1) + ((if @length > n then "..." else ""))
 
 Handlebars.registerHelper "truncate", (str, len) ->
-  str.truncate(len)  
+  str.truncate(len)
+
+Messenger.options =
+  extraClasses: "messenger-fixed messenger-on-top"
+  theme: "future"

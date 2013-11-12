@@ -14,4 +14,4 @@ onFBConnected = ->
   grafmap.access_token = FB.getAuthResponse()['accessToken']
   grafmap.getNearbyPlaces() if grafmap.found
   FB.api "/me", (response) ->
-    console.log "Good to see you, " + response.name + "."
+    console.log "Good to see you, " + response.name + "."    
