@@ -162,8 +162,17 @@ class GrafMap
           strokeOpacity: 1
           fillColor: '#FFE168'
           fillOpacity: 1
+        # Add the place to my places
         @myNearbyPlaces[obj.placeId] = objToSend
-        cb() if cb
+        # Re-paint the infoWindow and remove the listener
+        google.maps.event.clearListeners marker, 'click'
+        $.get "https://graph.facebook.com/#{obj.placeId}",
+          fields: 'category,picture,name,can_post,phone,description,location,link,likes'
+          access_token: @access_token
+        , (place) =>
+          @crateInfoWindow place, marker
+          # Call the callback if any
+          cb() if cb
 
   getIcon: (favorited) ->
     if favorited

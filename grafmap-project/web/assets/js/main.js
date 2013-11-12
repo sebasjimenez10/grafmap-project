@@ -208,9 +208,16 @@
             fillOpacity: 1
           });
           _this.myNearbyPlaces[obj.placeId] = objToSend;
-          if (cb) {
-            return cb();
-          }
+          google.maps.event.clearListeners(marker, 'click');
+          return $.get("https://graph.facebook.com/" + obj.placeId, {
+            fields: 'category,picture,name,can_post,phone,description,location,link,likes',
+            access_token: _this.access_token
+          }, function(place) {
+            _this.crateInfoWindow(place, marker);
+            if (cb) {
+              return cb();
+            }
+          });
         }
       });
     };
