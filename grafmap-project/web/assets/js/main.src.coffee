@@ -133,3 +133,8 @@ onFBConnected = ->
   grafmap.getNearbyPlaces() if grafmap.found
   FB.api "/me", (response) ->
     console.log "Good to see you, " + response.name + "."
+String::truncate = (n) ->
+  @substr(0, n - 1) + ((if @length > n then "..." else ""))
+
+Handlebars.registerHelper "truncate", (str, len) ->
+  str.truncate(len)  

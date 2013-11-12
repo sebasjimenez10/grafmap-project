@@ -175,6 +175,14 @@
     });
   };
 
+  String.prototype.truncate = function(n) {
+    return this.substr(0, n - 1) + (this.length > n ? "..." : "");
+  };
+
+  Handlebars.registerHelper("truncate", function(str, len) {
+    return str.truncate(len);
+  });
+
 }).call(this);
 
 /*
