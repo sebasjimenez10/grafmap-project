@@ -35,4 +35,6 @@ $(document).on 'click', '.favorite_button', (e) ->
     placeId: $(this).data('place-id')
     latitude: $(this).data('latitude')
     longitude: $(this).data('longitude')
-  grafmap.favoritePlace(obj)
+  grafmap.favoritePlace obj, () =>
+    $(this).html("<i class='fa fa-star'></i> Favorited")
+    $(this).attr('disabled','disabled')
