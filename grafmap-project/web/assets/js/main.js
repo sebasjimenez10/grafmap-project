@@ -291,9 +291,10 @@
       latitude: $(this).data('latitude'),
       longitude: $(this).data('longitude')
     };
+    $(this).html("<i class='fa fa-refresh fa-spin'></i> Favorite");
+    $(this).attr('disabled', 'disabled');
     return grafmap.favoritePlace(obj, function() {
-      $(_this).html("<i class='fa fa-star'></i> Favorited");
-      return $(_this).attr('disabled', 'disabled');
+      return $(_this).html("<i class='fa fa-star'></i> Favorited");
     });
   });
 

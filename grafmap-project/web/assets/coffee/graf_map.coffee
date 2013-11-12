@@ -140,7 +140,7 @@ class GrafMap
         , (place) =>
           @crateInfoWindow place, marker
           # Call the callback if any
-          cb() if cb
+          cb() if cb      
 
   getIcon: (favorited) ->
     if favorited
