@@ -8,10 +8,14 @@ window.fbAsyncInit = ->
 
   FB.Event.subscribe "auth.authResponseChange", (response) ->
     if response.status is "connected"
+      $('.button_login').hide()
+      $('#profile_user').show()
       onFBConnected()
     else if response.status is "not_authorized"
+      $('.button_login').show()
       FB.login()
     else
+      $('.button_login').show()
       FB.login()
 
 

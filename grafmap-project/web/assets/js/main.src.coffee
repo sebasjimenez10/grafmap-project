@@ -8,10 +8,14 @@ window.fbAsyncInit = ->
 
   FB.Event.subscribe "auth.authResponseChange", (response) ->
     if response.status is "connected"
+      $('.button_login').hide()
+      $('#profile_user').show()
       onFBConnected()
     else if response.status is "not_authorized"
+      $('.button_login').show()
       FB.login()
     else
+      $('.button_login').show()
       FB.login()
 
 
@@ -142,8 +146,16 @@ onFBConnected = ->
   console.log "Welcome!  Fetching your information.... "
   grafmap.access_token = FB.getAuthResponse()['accessToken']
   grafmap.getNearbyPlaces() if grafmap.found
-  FB.api "/me", (response) ->
-    console.log "Good to see you, " + response.name + "."    
+  fields = 'id,name,username,picture,name'
+  FB.api "/me?fields=#{fields}", (response) ->
+    $('#profile_user img').attr('src',"https://graph.facebook.com/#{response.username}/picture?type=large")
+    $('#profile_user .name').text(response.name)
+    console.log response
+    console.log "Good to see you, " + response.name + "."
+
+$('#fb_button_login').on 'click', (e) ->
+  e.preventDefault()
+  FB.login()
 String::truncate = (n) ->
   @substr(0, n - 1) + ((if @length > n then "..." else ""))
 

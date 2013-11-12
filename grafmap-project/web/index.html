@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="bower_components/messenger/build/css/messenger.css">
     <link rel="stylesheet" href="bower_components/messenger/build/css/messenger-spinner.css">
     <link rel="stylesheet" href="bower_components/messenger/build/css/messenger-theme-future.css">
+    <link rel="stylesheet" href="assets/css/vendor/zocial.css">
     <link rel="stylesheet" href="assets/css/main.css">
     <script src="bower_components/modernizr/modernizr.js"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
@@ -27,7 +28,14 @@
       <div class="row">
         <div class="col-md-2">
           <article class="top_nav">
-            <fb:login-button show-faces="true" width="200" max-rows="1"></fb:login-button>
+            <div class="button_login">
+              <button id="fb_button_login" class='zocial facebook'>Login</button>
+            </div>
+            <section id="profile_user">
+              <img src="" class="img-thumbnail img-responsive">
+              <label class="name"></label>
+            </section>           
+            <!-- <fb:login-button show-faces="true" width="200" max-rows="1"></fb:login-button> -->
           </article>          
         </div>
         <div class="col-md-10">

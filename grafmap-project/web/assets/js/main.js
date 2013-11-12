@@ -12,10 +12,14 @@
     });
     return FB.Event.subscribe("auth.authResponseChange", function(response) {
       if (response.status === "connected") {
+        $('.button_login').hide();
+        $('#profile_user').show();
         return onFBConnected();
       } else if (response.status === "not_authorized") {
+        $('.button_login').show();
         return FB.login();
       } else {
+        $('.button_login').show();
         return FB.login();
       }
     });
@@ -175,15 +179,25 @@
   }).resize();
 
   onFBConnected = function() {
+    var fields;
     console.log("Welcome!  Fetching your information.... ");
     grafmap.access_token = FB.getAuthResponse()['accessToken'];
     if (grafmap.found) {
       grafmap.getNearbyPlaces();
     }
-    return FB.api("/me", function(response) {
+    fields = 'id,name,username,picture,name';
+    return FB.api("/me?fields=" + fields, function(response) {
+      $('#profile_user img').attr('src', "https://graph.facebook.com/" + response.username + "/picture?type=large");
+      $('#profile_user .name').text(response.name);
+      console.log(response);
       return console.log("Good to see you, " + response.name + ".");
     });
   };
+
+  $('#fb_button_login').on('click', function(e) {
+    e.preventDefault();
+    return FB.login();
+  });
 
   String.prototype.truncate = function(n) {
     return this.substr(0, n - 1) + (this.length > n ? "..." : "");
