@@ -26,13 +26,13 @@ class GrafMap
       message: 'We found you!'
       id: 'alerter'
       type: 'success'
-      showCloseButton: true
+      showCloseButton: true 
 
     @coords = position.coords
 
-    latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
+    latlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude)
     myOptions =
-      zoom: 15
+      zoom: 17
       center: latlng
       mapTypeControl: false
       navigationControlOptions:
@@ -91,8 +91,8 @@ class GrafMap
       type: 'place'
       fields: 'category,picture,name,can_post,phone,description,location,link'
       center: "#{@coords.latitude},#{@coords.longitude}"
-      distance: 150
-      limit: 25
+      distance: 500
+      limit: 30
       offset: 0
       access_token: @access_token
     , (data) =>

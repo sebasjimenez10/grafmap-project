@@ -76,7 +76,7 @@
       this.coords = position.coords;
       latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
       myOptions = {
-        zoom: 15,
+        zoom: 17,
         center: latlng,
         mapTypeControl: false,
         navigationControlOptions: {
@@ -141,8 +141,8 @@
         type: 'place',
         fields: 'category,picture,name,can_post,phone,description,location,link',
         center: "" + this.coords.latitude + "," + this.coords.longitude,
-        distance: 150,
-        limit: 25,
+        distance: 500,
+        limit: 30,
         offset: 0,
         access_token: this.access_token
       }, function(data) {
@@ -190,7 +190,11 @@
   };
 
   Handlebars.registerHelper("truncate", function(str, len) {
-    return str.truncate(len);
+    if (str != null) {
+      return str.truncate(len);
+    } else {
+      return '';
+    }
   });
 
   Messenger.options = {
