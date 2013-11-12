@@ -262,6 +262,6 @@ Handlebars.registerHelper "isDisable", (id) ->
     ""
 
 Messenger.options =
-  extraClasses: "messenger-fixed messenger-on-top"
+  extraClasses: "messenger-fixed messenger-on-bottom messenger-on-right"
   theme: "future"
   parentLocations: [".col-md-10"]
