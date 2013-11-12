@@ -103,6 +103,15 @@
       marker = new google.maps.Marker({
         position: latlng,
         map: this.map,
+        icon: {
+          path: fontawesome.markers.EXCLAMATION,
+          scale: 0.5,
+          strokeWeight: 0.2,
+          strokeColor: 'black',
+          strokeOpacity: 1,
+          fillColor: '#f8ae5f',
+          fillOpacity: 0.7
+        },
         animation: google.maps.Animation.DROP
       });
       infowindow = new google.maps.InfoWindow({
