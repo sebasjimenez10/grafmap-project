@@ -140,7 +140,7 @@
 
     GrafMap.prototype.setMyNearbyPlaces = function(cb) {
       var _this = this;
-      return $.get("http://localhost:8080/grafmap-project/webresources/favorite/" + this.userId, function(data) {
+      return $.get("/grafmap-project/webresources/favorite/" + this.userId, function(data) {
         var place, _i, _len;
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           place = data[_i];
@@ -183,7 +183,7 @@
       };
       $.ajax({
         type: 'POST',
-        url: 'http://localhost:8080/grafmap-project/webresources/favorite',
+        url: '/grafmap-project/webresources/favorite',
         data: JSON.stringify(objToSend),
         dataType: 'json',
         contentType: 'application/json',

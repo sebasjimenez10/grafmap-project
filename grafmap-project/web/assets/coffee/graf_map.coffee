@@ -84,7 +84,7 @@ class GrafMap
       infowindow.open @map, marker
 
   setMyNearbyPlaces: (cb) =>
-    $.get "http://localhost:8080/grafmap-project/webresources/favorite/#{@userId}", (data) =>
+    $.get "/grafmap-project/webresources/favorite/#{@userId}", (data) =>
       # Get my nearby places
       for place in data
         @myNearbyPlaces[place.id] = place
@@ -113,7 +113,7 @@ class GrafMap
 
     $.ajax
       type: 'POST'
-      url: 'http://localhost:8080/grafmap-project/webresources/favorite'
+      url: '/grafmap-project/webresources/favorite'
       data: JSON.stringify objToSend
       dataType: 'json'
       contentType: 'application/json'    
