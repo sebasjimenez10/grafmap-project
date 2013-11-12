@@ -21,6 +21,7 @@
     "jquery": "~2.0.3",
     "font-awesome": "~4.0.3",
     "modernizr": "~2.6.2",
-    "bootstrap-sass": "3.0.0"
+    "bootstrap-sass": "3.0.0",
+    "handlebars": "~1.1.2"
   }
 }

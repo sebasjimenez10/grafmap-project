@@ -77,14 +77,9 @@ class GrafMap
   addNearbyPlace: (place) =>
     console.log place
 
-    contentHtmlString = """
-                        <div class="info-window">
-                          <div class="content-frame">
-                            <h3>#{place.name}</h3>
-                            <p>#{place.description}</p>
-                          </div>
-                        </div>
-                        """
+    tempalteSource = $("#info-window-template").html()
+    template = Handlebars.compile(tempalteSource)
+    contentHtmlString = template(place)
 
     latlng = new google.maps.LatLng(place.location.latitude, place.location.longitude)    
     marker = new google.maps.Marker(

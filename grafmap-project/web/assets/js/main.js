@@ -96,9 +96,11 @@
     };
 
     GrafMap.prototype.addNearbyPlace = function(place) {
-      var contentHtmlString, infowindow, latlng, marker;
+      var contentHtmlString, infowindow, latlng, marker, tempalteSource, template;
       console.log(place);
-      contentHtmlString = "<div class=\"info-window\">\n  <div class=\"content-frame\">\n    <h3>" + place.name + "</h3>\n    <p>" + place.description + "</p>\n  </div>\n</div>";
+      tempalteSource = $("#info-window-template").html();
+      template = Handlebars.compile(tempalteSource);
+      contentHtmlString = template(place);
       latlng = new google.maps.LatLng(place.location.latitude, place.location.longitude);
       marker = new google.maps.Marker({
         position: latlng,
