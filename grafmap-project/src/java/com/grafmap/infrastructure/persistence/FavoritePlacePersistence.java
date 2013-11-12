@@ -17,7 +17,6 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
-import org.jooq.SelectConditionStep;
 import org.jooq.impl.DSL;
 
 /**
@@ -60,22 +59,22 @@ public class FavoritePlacePersistence implements FavoritePlaceRepository {
                 .from(com.grafmap.infrastructure.persistence.tables.FavoritePlace.FAVORITE_PLACE)
                 .where(com.grafmap.infrastructure.persistence.tables.FavoritePlace.FAVORITE_PLACE.USER_ID.equal(userId))
                 .fetch();
-        
+
         System.out.println("Size: " + fetch.size());
-        
+
         ArrayList<FavoritePlace> favList = new ArrayList<>();
-        
+
         for (int i = 0; i < fetch.size(); i++) {
             Record record = fetch.get(i);
-            
+
             FavoritePlace fp = new FavoritePlace();
             fp.setId(record.getValue("id").toString());
             fp.setUserId(record.getValue("user_id").toString());
             fp.setLatitud(record.getValue("latitud").toString());
             fp.setLongitud(record.getValue("longitud").toString());
-            
+
             favList.add(fp);
-            
+
         }
 
         return favList;
@@ -85,13 +84,15 @@ public class FavoritePlacePersistence implements FavoritePlaceRepository {
 
         if (conn == null) {
 
-            String db_host = "localhost";
+            String db_host = "ec2-23-21-211-172.compute-1.amazonaws.com";
             String db_name = "grafmap";
-            String db_user = "root";
-            String db_password = "root";
+            String db_user = "grafmap_root";
+            String db_password = "grafmap_root";
 
             String url = "jdbc:mysql://" + db_host + ":3306/" + db_name;
 
+            System.out.println("URL: " + url);
+            
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance();
                 conn = (Connection) DriverManager.getConnection(url, db_user, db_password);

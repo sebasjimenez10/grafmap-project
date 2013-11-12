@@ -172,7 +172,7 @@ class GrafMap
         , (place) =>
           @crateInfoWindow place, marker
           # Call the callback if any
-          cb() if cb
+          cb() if cb      
 
   getIcon: (favorited) ->
     if favorited
@@ -228,9 +228,11 @@ $(document).on 'click', '.favorite_button', (e) ->
     placeId: $(this).data('place-id')
     latitude: $(this).data('latitude')
     longitude: $(this).data('longitude')
+  # Feedback while processing 
+  $(this).html("<i class='fa fa-refresh fa-spin'></i> Favorite")
+  $(this).attr('disabled','disabled')
   grafmap.favoritePlace obj, () =>
     $(this).html("<i class='fa fa-star'></i> Favorited")
-    $(this).attr('disabled','disabled')
 String::truncate = (n) ->
   @substr(0, n - 1) + ((if @length > n then "..." else ""))
 

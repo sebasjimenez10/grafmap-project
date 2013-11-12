@@ -1,7 +1,12 @@
 GrafMap
 ===============
 
-TODO: Write project description
+
+Description
+===========
+
+GrafMap is an application to check which places are around you and mark them as favorites if you want. We are using [HTML5 geolocation](https://developer.mozilla.org/en-US/docs/WebAPI/Using_geolocation) to get your location from the browser and *facebook* to fill the map with places that are around you. The places are marked and drew with [google maps API](https://developers.google.com/maps/documentation/javascript/examples/marker-simple). The final product is bigger than what we implement here, this is a minimum viable product, it was built using java for backend, following a *DDD approach*. The frontend was built using coffeescript, sass and HTML5. 
+
 
 ## Front-end setup
 > Make sure you already have [NPM](http://npmjs.org/) installed.
@@ -31,4 +36,4 @@ Finally, if you want to run a separate server for development or don't want to d
 
 ## Server setup
 
-TODO: Write Server setup instructions.
+The final product is just a common java web application 
