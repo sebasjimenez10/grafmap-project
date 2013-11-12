@@ -10,3 +10,4 @@ Handlebars.registerHelper "truncate", (str, len) ->
 Messenger.options =
   extraClasses: "messenger-fixed messenger-on-top"
   theme: "future"
+  parentLocations: [".col-md-10"]

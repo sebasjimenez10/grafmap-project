@@ -15,7 +15,7 @@ onFBConnected = ->
   grafmap.getNearbyPlaces() if grafmap.found
   fields = 'id,name,username,picture,name'
   FB.api "/me?fields=#{fields}", (response) ->
-    $('#profile_user img').attr('src',"https://graph.facebook.com/#{response.username}/picture?type=large")
+    $('#profile_user img').attr('src',"https://graph.facebook.com/#{response.username}/picture?type=normal")
     $('#profile_user .name').text(response.name)
     console.log response
     console.log "Good to see you, " + response.name + "."
