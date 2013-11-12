@@ -49,7 +49,10 @@
 
     GrafMap.prototype.map = null;
 
+    GrafMap.prototype.markers = {};
+
     function GrafMap() {
+      this.favoritePlace = __bind(this.favoritePlace, this);
       this.getNearbyPlaces = __bind(this.getNearbyPlaces, this);
       this.addNearbyPlace = __bind(this.addNearbyPlace, this);
       this.navigatorSuccess = __bind(this.navigatorSuccess, this);
@@ -130,6 +133,7 @@
         },
         animation: google.maps.Animation.DROP
       });
+      this.markers[place.id] = marker;
       infowindow = new google.maps.InfoWindow({
         content: contentHtmlString
       });
@@ -143,7 +147,7 @@
       console.log('Getting nearby places...');
       return $.get("https://graph.facebook.com/search", {
         type: 'place',
-        fields: 'category,picture,name,can_post,phone,description,location,link',
+        fields: 'category,picture,name,can_post,phone,description,location,link,likes',
         center: "" + this.coords.latitude + "," + this.coords.longitude,
         distance: 500,
         limit: 30,
@@ -159,6 +163,20 @@
           _results.push(_this.addNearbyPlace(place));
         }
         return _results;
+      });
+    };
+
+    GrafMap.prototype.favoritePlace = function(placeId) {
+      var marker;
+      marker = this.markers[placeId];
+      return marker.setIcon({
+        path: fontawesome.markers.STAR,
+        scale: 0.5,
+        strokeWeight: 0.8,
+        strokeColor: '#111',
+        strokeOpacity: 1,
+        fillColor: '#FFE168',
+        fillOpacity: 1
       });
     };
 
@@ -182,6 +200,7 @@
     var fields;
     console.log("Welcome!  Fetching your information.... ");
     grafmap.access_token = FB.getAuthResponse()['accessToken'];
+    console.log(grafmap.access_token);
     if (grafmap.found) {
       grafmap.getNearbyPlaces();
     }
@@ -197,6 +216,10 @@
   $('#fb_button_login').on('click', function(e) {
     e.preventDefault();
     return FB.login();
+  });
+
+  $(document).on('click', '.favorite_button', function(e) {
+    return grafmap.favoritePlace($(this).data('place-id'));
   });
 
   String.prototype.truncate = function(n) {

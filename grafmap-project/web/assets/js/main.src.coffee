@@ -36,6 +36,7 @@ class GrafMap
   coords: null
   access_token: null
   map: null
+  markers: {}
 
   constructor: () ->
 
@@ -91,7 +92,6 @@ class GrafMap
 
   addNearbyPlace: (place) =>
     console.log place
-
     tempalteSource = $("#info-window-template").html()
     template = Handlebars.compile(tempalteSource)
     contentHtmlString = template(place)
@@ -110,18 +110,20 @@ class GrafMap
         fillOpacity: 0.8
       animation: google.maps.Animation.DROP
     )
+
+    # Add to markers array
+    @markers[place.id] = marker
+
     # Create info window
     infowindow = new google.maps.InfoWindow(content: contentHtmlString)
     google.maps.event.addListener marker, "click", ->
       infowindow.open @map, marker
 
-
-
   getNearbyPlaces: () =>
     console.log 'Getting nearby places...'
     $.get "https://graph.facebook.com/search",
       type: 'place'
-      fields: 'category,picture,name,can_post,phone,description,location,link'
+      fields: 'category,picture,name,can_post,phone,description,location,link,likes'
       center: "#{@coords.latitude},#{@coords.longitude}"
       distance: 500
       limit: 30
@@ -130,6 +132,17 @@ class GrafMap
     , (data) =>
       console.log data
       @addNearbyPlace place for place in data.data
+
+  favoritePlace: (placeId) =>
+    marker = @markers[placeId]
+    marker.setIcon
+      path: fontawesome.markers.STAR
+      scale: 0.5
+      strokeWeight: 0.8
+      strokeColor: '#111'
+      strokeOpacity: 1
+      fillColor: '#FFE168'
+      fillOpacity: 1
 
 grafmap = null
 
@@ -145,6 +158,7 @@ $(window).resize(->
 onFBConnected = ->
   console.log "Welcome!  Fetching your information.... "
   grafmap.access_token = FB.getAuthResponse()['accessToken']
+  console.log grafmap.access_token
   grafmap.getNearbyPlaces() if grafmap.found
   fields = 'id,name,username,picture,name'
   FB.api "/me?fields=#{fields}", (response) ->
@@ -153,9 +167,17 @@ onFBConnected = ->
     console.log response
     console.log "Good to see you, " + response.name + "."
 
+
+# Binding
+
+# Login
 $('#fb_button_login').on 'click', (e) ->
   e.preventDefault()
   FB.login()
+
+# Favorite place
+$(document).on 'click', '.favorite_button', (e) ->
+  grafmap.favoritePlace($(this).data('place-id'))
 String::truncate = (n) ->
   @substr(0, n - 1) + ((if @length > n then "..." else ""))
 
