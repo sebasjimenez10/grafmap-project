@@ -12,13 +12,13 @@ $(window).resize(->
 onFBConnected = ->
   console.log "Welcome!  Fetching your information.... "
   grafmap.access_token = FB.getAuthResponse()['accessToken']
-  grafmap.getNearbyPlaces() if grafmap.found
   fields = 'id,name,username,picture,name'
   FB.api "/me?fields=#{fields}", (response) ->
     grafmap.userId = response.id
+    # Set my nearby places and then get the nearby places around me.
+    grafmap.setMyNearbyPlaces(grafmap.getNearbyPlaces) if grafmap.found    
     $('#profile_user img').attr('src',"https://graph.facebook.com/#{response.username}/picture?type=normal")
     $('#profile_user .name').text(response.name)
-    console.log response
     console.log "Good to see you, " + response.name + "."
 
 

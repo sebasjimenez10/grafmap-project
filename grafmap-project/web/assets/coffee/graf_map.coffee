@@ -6,6 +6,7 @@ class GrafMap
   userId: null
   map: null
   markers: {}
+  myNearbyPlaces:{}
 
   constructor: () ->
 
@@ -59,8 +60,9 @@ class GrafMap
       id: 'alerter'
       type: 'error'
 
+
   addNearbyPlace: (place) =>
-    console.log place
+
     tempalteSource = $("#info-window-template").html()
     template = Handlebars.compile(tempalteSource)
     contentHtmlString = template(place)
@@ -69,14 +71,7 @@ class GrafMap
     marker = new google.maps.Marker(
       position: latlng
       map: @map
-      icon:
-        path: fontawesome.markers.STAR_EMPTY
-        scale: 0.5
-        strokeWeight: 0.2
-        strokeColor: 'black'
-        strokeOpacity: 1
-        fillColor: '#D8432E'
-        fillOpacity: 0.8
+      icon: @getIcon @myNearbyPlaces[place.id]?
       animation: google.maps.Animation.DROP
     )
 
@@ -87,6 +82,13 @@ class GrafMap
     infowindow = new google.maps.InfoWindow(content: contentHtmlString)
     google.maps.event.addListener marker, "click", ->
       infowindow.open @map, marker
+
+  setMyNearbyPlaces: (cb) =>
+    $.get "http://localhost:8080/grafmap-project/webresources/favorite/#{@userId}", (data) =>
+      # Get my nearby places
+      for place in data
+        @myNearbyPlaces[place.id] = place
+      cb()
 
   getNearbyPlaces: () =>
     console.log 'Getting nearby places...'
@@ -128,3 +130,21 @@ class GrafMap
       strokeOpacity: 1
       fillColor: '#FFE168'
       fillOpacity: 1
+
+  getIcon: (favorited) ->
+    if favorited
+      path: fontawesome.markers.STAR
+      scale: 0.5
+      strokeWeight: 0.8
+      strokeColor: '#111'
+      strokeOpacity: 1
+      fillColor: '#FFE168'
+      fillOpacity: 1
+    else
+      path: fontawesome.markers.STAR_EMPTY
+      scale: 0.5
+      strokeWeight: 0.2
+      strokeColor: 'black'
+      strokeOpacity: 1
+      fillColor: '#D8432E'
+      fillOpacity: 0.8
