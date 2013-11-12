@@ -3,6 +3,7 @@ class GrafMap
   found: false
   coords: null
   access_token: null
+  userId: null
   map: null
   markers: {}
 
@@ -98,11 +99,27 @@ class GrafMap
       offset: 0
       access_token: @access_token
     , (data) =>
-      console.log data
       @addNearbyPlace place for place in data.data
 
-  favoritePlace: (placeId) =>
-    marker = @markers[placeId]
+  favoritePlace: (obj) =>
+
+    objToSend = 
+        id: "#{obj.placeId}"
+        user_id: @userId
+        latitud: "#{obj.latitude}"
+        longitud: "#{obj.longitude}"
+
+    $.ajax
+      type: 'POST'
+      url: 'http://localhost:8080/grafmap-project/webresources/favorite'
+      data: JSON.stringify objToSend
+      dataType: 'json'
+      contentType: 'application/json'    
+      success: (data) ->
+        console.log data
+
+    # Re-paint the marker
+    marker = @markers[obj.placeId]
     marker.setIcon
       path: fontawesome.markers.STAR
       scale: 0.5

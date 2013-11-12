@@ -47,6 +47,8 @@
 
     GrafMap.prototype.access_token = null;
 
+    GrafMap.prototype.userId = null;
+
     GrafMap.prototype.map = null;
 
     GrafMap.prototype.markers = {};
@@ -155,7 +157,6 @@
         access_token: this.access_token
       }, function(data) {
         var place, _i, _len, _ref, _results;
-        console.log(data);
         _ref = data.data;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -166,9 +167,25 @@
       });
     };
 
-    GrafMap.prototype.favoritePlace = function(placeId) {
-      var marker;
-      marker = this.markers[placeId];
+    GrafMap.prototype.favoritePlace = function(obj) {
+      var marker, objToSend;
+      objToSend = {
+        id: "" + obj.placeId,
+        user_id: this.userId,
+        latitud: "" + obj.latitude,
+        longitud: "" + obj.longitude
+      };
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost:8080/grafmap-project/webresources/favorite',
+        data: JSON.stringify(objToSend),
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function(data) {
+          return console.log(data);
+        }
+      });
+      marker = this.markers[obj.placeId];
       return marker.setIcon({
         path: fontawesome.markers.STAR,
         scale: 0.5,
@@ -200,12 +217,12 @@
     var fields;
     console.log("Welcome!  Fetching your information.... ");
     grafmap.access_token = FB.getAuthResponse()['accessToken'];
-    console.log(grafmap.access_token);
     if (grafmap.found) {
       grafmap.getNearbyPlaces();
     }
     fields = 'id,name,username,picture,name';
     return FB.api("/me?fields=" + fields, function(response) {
+      grafmap.userId = response.id;
       $('#profile_user img').attr('src', "https://graph.facebook.com/" + response.username + "/picture?type=normal");
       $('#profile_user .name').text(response.name);
       console.log(response);
@@ -219,7 +236,13 @@
   });
 
   $(document).on('click', '.favorite_button', function(e) {
-    return grafmap.favoritePlace($(this).data('place-id'));
+    var obj;
+    obj = {
+      placeId: $(this).data('place-id'),
+      latitude: $(this).data('latitude'),
+      longitude: $(this).data('longitude')
+    };
+    return grafmap.favoritePlace(obj);
   });
 
   String.prototype.truncate = function(n) {

@@ -40,8 +40,6 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
 
             favoritePlaceObj.setId(jFavoritePlace.getString("id"));
             favoritePlaceObj.setUserId(jFavoritePlace.getString("user_id"));
-            favoritePlaceObj.setName(jFavoritePlace.getString("name"));
-            favoritePlaceObj.setCategory(jFavoritePlace.getString("category"));
             favoritePlaceObj.setLatitud(jFavoritePlace.getString("latitud"));
             favoritePlaceObj.setLongitud(jFavoritePlace.getString("longitud"));
 
