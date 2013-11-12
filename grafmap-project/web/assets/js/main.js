@@ -47,13 +47,18 @@
 
     GrafMap.prototype.access_token = null;
 
+    GrafMap.prototype.userId = null;
+
     GrafMap.prototype.map = null;
 
     GrafMap.prototype.markers = {};
 
+    GrafMap.prototype.myNearbyPlaces = {};
+
     function GrafMap() {
       this.favoritePlace = __bind(this.favoritePlace, this);
       this.getNearbyPlaces = __bind(this.getNearbyPlaces, this);
+      this.setMyNearbyPlaces = __bind(this.setMyNearbyPlaces, this);
       this.addNearbyPlace = __bind(this.addNearbyPlace, this);
       this.navigatorSuccess = __bind(this.navigatorSuccess, this);
       Messenger().post({
@@ -114,7 +119,6 @@
 
     GrafMap.prototype.addNearbyPlace = function(place) {
       var contentHtmlString, infowindow, latlng, marker, tempalteSource, template;
-      console.log(place);
       tempalteSource = $("#info-window-template").html();
       template = Handlebars.compile(tempalteSource);
       contentHtmlString = template(place);
@@ -122,15 +126,7 @@
       marker = new google.maps.Marker({
         position: latlng,
         map: this.map,
-        icon: {
-          path: fontawesome.markers.STAR_EMPTY,
-          scale: 0.5,
-          strokeWeight: 0.2,
-          strokeColor: 'black',
-          strokeOpacity: 1,
-          fillColor: '#D8432E',
-          fillOpacity: 0.8
-        },
+        icon: this.getIcon(this.myNearbyPlaces[place.id] != null),
         animation: google.maps.Animation.DROP
       });
       this.markers[place.id] = marker;
@@ -139,6 +135,18 @@
       });
       return google.maps.event.addListener(marker, "click", function() {
         return infowindow.open(this.map, marker);
+      });
+    };
+
+    GrafMap.prototype.setMyNearbyPlaces = function(cb) {
+      var _this = this;
+      return $.get("/grafmap-project/webresources/favorite/" + this.userId, function(data) {
+        var place, _i, _len;
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          place = data[_i];
+          _this.myNearbyPlaces[place.id] = place;
+        }
+        return cb();
       });
     };
 
@@ -155,7 +163,6 @@
         access_token: this.access_token
       }, function(data) {
         var place, _i, _len, _ref, _results;
-        console.log(data);
         _ref = data.data;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -166,9 +173,25 @@
       });
     };
 
-    GrafMap.prototype.favoritePlace = function(placeId) {
-      var marker;
-      marker = this.markers[placeId];
+    GrafMap.prototype.favoritePlace = function(obj) {
+      var marker, objToSend;
+      objToSend = {
+        id: "" + obj.placeId,
+        user_id: this.userId,
+        latitud: "" + obj.latitude,
+        longitud: "" + obj.longitude
+      };
+      $.ajax({
+        type: 'POST',
+        url: '/grafmap-project/webresources/favorite',
+        data: JSON.stringify(objToSend),
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function(data) {
+          return console.log(data);
+        }
+      });
+      marker = this.markers[obj.placeId];
       return marker.setIcon({
         path: fontawesome.markers.STAR,
         scale: 0.5,
@@ -178,6 +201,30 @@
         fillColor: '#FFE168',
         fillOpacity: 1
       });
+    };
+
+    GrafMap.prototype.getIcon = function(favorited) {
+      if (favorited) {
+        return {
+          path: fontawesome.markers.STAR,
+          scale: 0.5,
+          strokeWeight: 0.8,
+          strokeColor: '#111',
+          strokeOpacity: 1,
+          fillColor: '#FFE168',
+          fillOpacity: 1
+        };
+      } else {
+        return {
+          path: fontawesome.markers.STAR_EMPTY,
+          scale: 0.5,
+          strokeWeight: 0.2,
+          strokeColor: 'black',
+          strokeOpacity: 1,
+          fillColor: '#D8432E',
+          fillOpacity: 0.8
+        };
+      }
     };
 
     return GrafMap;
@@ -200,15 +247,14 @@
     var fields;
     console.log("Welcome!  Fetching your information.... ");
     grafmap.access_token = FB.getAuthResponse()['accessToken'];
-    console.log(grafmap.access_token);
-    if (grafmap.found) {
-      grafmap.getNearbyPlaces();
-    }
     fields = 'id,name,username,picture,name';
     return FB.api("/me?fields=" + fields, function(response) {
+      grafmap.userId = response.id;
+      if (grafmap.found) {
+        grafmap.setMyNearbyPlaces(grafmap.getNearbyPlaces);
+      }
       $('#profile_user img').attr('src', "https://graph.facebook.com/" + response.username + "/picture?type=normal");
       $('#profile_user .name').text(response.name);
-      console.log(response);
       return console.log("Good to see you, " + response.name + ".");
     });
   };
@@ -219,7 +265,13 @@
   });
 
   $(document).on('click', '.favorite_button', function(e) {
-    return grafmap.favoritePlace($(this).data('place-id'));
+    var obj;
+    obj = {
+      placeId: $(this).data('place-id'),
+      latitude: $(this).data('latitude'),
+      longitude: $(this).data('longitude')
+    };
+    return grafmap.favoritePlace(obj);
   });
 
   String.prototype.truncate = function(n) {

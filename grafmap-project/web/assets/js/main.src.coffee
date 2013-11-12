@@ -35,8 +35,10 @@ class GrafMap
   found: false
   coords: null
   access_token: null
+  userId: null
   map: null
   markers: {}
+  myNearbyPlaces:{}
 
   constructor: () ->
 
@@ -90,8 +92,9 @@ class GrafMap
       id: 'alerter'
       type: 'error'
 
+
   addNearbyPlace: (place) =>
-    console.log place
+
     tempalteSource = $("#info-window-template").html()
     template = Handlebars.compile(tempalteSource)
     contentHtmlString = template(place)
@@ -100,14 +103,7 @@ class GrafMap
     marker = new google.maps.Marker(
       position: latlng
       map: @map
-      icon:
-        path: fontawesome.markers.STAR_EMPTY
-        scale: 0.5
-        strokeWeight: 0.2
-        strokeColor: 'black'
-        strokeOpacity: 1
-        fillColor: '#D8432E'
-        fillOpacity: 0.8
+      icon: @getIcon @myNearbyPlaces[place.id]?
       animation: google.maps.Animation.DROP
     )
 
@@ -118,6 +114,13 @@ class GrafMap
     infowindow = new google.maps.InfoWindow(content: contentHtmlString)
     google.maps.event.addListener marker, "click", ->
       infowindow.open @map, marker
+
+  setMyNearbyPlaces: (cb) =>
+    $.get "/grafmap-project/webresources/favorite/#{@userId}", (data) =>
+      # Get my nearby places
+      for place in data
+        @myNearbyPlaces[place.id] = place
+      cb()
 
   getNearbyPlaces: () =>
     console.log 'Getting nearby places...'
@@ -130,11 +133,27 @@ class GrafMap
       offset: 0
       access_token: @access_token
     , (data) =>
-      console.log data
       @addNearbyPlace place for place in data.data
 
-  favoritePlace: (placeId) =>
-    marker = @markers[placeId]
+  favoritePlace: (obj) =>
+
+    objToSend = 
+        id: "#{obj.placeId}"
+        user_id: @userId
+        latitud: "#{obj.latitude}"
+        longitud: "#{obj.longitude}"
+
+    $.ajax
+      type: 'POST'
+      url: '/grafmap-project/webresources/favorite'
+      data: JSON.stringify objToSend
+      dataType: 'json'
+      contentType: 'application/json'    
+      success: (data) ->
+        console.log data
+
+    # Re-paint the marker
+    marker = @markers[obj.placeId]
     marker.setIcon
       path: fontawesome.markers.STAR
       scale: 0.5
@@ -144,6 +163,23 @@ class GrafMap
       fillColor: '#FFE168'
       fillOpacity: 1
 
+  getIcon: (favorited) ->
+    if favorited
+      path: fontawesome.markers.STAR
+      scale: 0.5
+      strokeWeight: 0.8
+      strokeColor: '#111'
+      strokeOpacity: 1
+      fillColor: '#FFE168'
+      fillOpacity: 1
+    else
+      path: fontawesome.markers.STAR_EMPTY
+      scale: 0.5
+      strokeWeight: 0.2
+      strokeColor: 'black'
+      strokeOpacity: 1
+      fillColor: '#D8432E'
+      fillOpacity: 0.8
 grafmap = null
 
 $ ->
@@ -158,13 +194,13 @@ $(window).resize(->
 onFBConnected = ->
   console.log "Welcome!  Fetching your information.... "
   grafmap.access_token = FB.getAuthResponse()['accessToken']
-  console.log grafmap.access_token
-  grafmap.getNearbyPlaces() if grafmap.found
   fields = 'id,name,username,picture,name'
   FB.api "/me?fields=#{fields}", (response) ->
+    grafmap.userId = response.id
+    # Set my nearby places and then get the nearby places around me.
+    grafmap.setMyNearbyPlaces(grafmap.getNearbyPlaces) if grafmap.found    
     $('#profile_user img').attr('src',"https://graph.facebook.com/#{response.username}/picture?type=normal")
     $('#profile_user .name').text(response.name)
-    console.log response
     console.log "Good to see you, " + response.name + "."
 
 
@@ -177,7 +213,11 @@ $('#fb_button_login').on 'click', (e) ->
 
 # Favorite place
 $(document).on 'click', '.favorite_button', (e) ->
-  grafmap.favoritePlace($(this).data('place-id'))
+  obj =
+    placeId: $(this).data('place-id')
+    latitude: $(this).data('latitude')
+    longitude: $(this).data('longitude')
+  grafmap.favoritePlace(obj)
 String::truncate = (n) ->
   @substr(0, n - 1) + ((if @length > n then "..." else ""))
 

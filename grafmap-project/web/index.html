@@ -27,6 +27,7 @@
     <div id="container">
 
       <div class="row">
+        <!-- LEFT COLUMN -->
         <div class="col-md-2 left_top_column">
           <article class="top_nav">
             <div id="grafmap_logo" class="logo animated slideInLeft">
@@ -42,6 +43,7 @@
             <!-- <fb:login-button show-faces="true" width="200" max-rows="1"></fb:login-button> -->
           </article>          
         </div>
+        <!-- RIGHT COLUMN -->
         <div class="col-md-10">
           <div id="map"></div>
         </div>        
@@ -67,7 +69,7 @@
                 {{truncate description 150}}
               </div>
               <footer>
-                <button data-place-id="{{id}}" type="button" class="btn btn-default favorite_button"><i class="fa fa-star-o"></i> Favorite</button>
+                <button data-place-id="{{id}}" data-latitude="{{location.latitude}}" data-longitude="{{location.longitude}}" type="button" class="btn btn-default favorite_button"><i class="fa fa-star-o"></i> Favorite</button>
               </footer>              
             </div>          
           </div>
