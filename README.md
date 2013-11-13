@@ -36,4 +36,4 @@ Finally, if you want to run a separate server for development or don't want to d
 
 ## Server setup
 
-The final product is just a common java web application 
+This application runs in a GlassFish 3 Server. It's located [here] (http://grafmap.sebasjimenezv.cloudbees.net/grafmap-project/). Feel free to use it.
