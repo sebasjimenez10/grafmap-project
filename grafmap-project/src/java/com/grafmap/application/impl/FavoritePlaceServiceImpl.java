@@ -8,7 +8,7 @@ import com.grafmap.application.FavoritePlaceService;
 import com.grafmap.domain.FavoritePlace;
 import com.grafmap.domain.FavoritePlaceRepository;
 import com.grafmap.infrastructure.persistence.FavoritePlacePersistence;
-import com.grafmap.infrastructure.persistence.FavoritePlaceRepositoryImpl;
+//import com.grafmap.infrastructure.persistence.FavoritePlaceRepositoryImpl;
 import java.util.ArrayList;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
