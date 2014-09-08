@@ -24,5 +24,14 @@ module GrafmapRails
     config.assets.paths << Rails.root.join('vendor', 'assets', 'components')
     # adding fonts to rails assets pipeline
     config.assets.paths << Rails.root.join('vendor', 'assets', 'fonts')
+
+    # Configuring assets to allow heroku to find them
+    config.assets.precompile.push(Proc.new do |path|
+      File.extname(path).in? [
+        '.html', '.erb', '.haml',                 # Templates
+        '.png',  '.gif', '.jpg', '.jpeg', '.svg', # Images
+        '.eot',  '.otf', '.svc', '.woff', '.ttf', # Fonts
+      ]
+    end)
   end
 end
