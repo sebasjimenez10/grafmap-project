@@ -27,6 +27,7 @@ module GrafmapRails
     config.assets.paths << Rails.root.join('vendor', 'assets', 'fonts')
 
     # Configuring assets to allow heroku to find them
+    config.assets.precompile.shift
     config.assets.precompile.push(Proc.new do |path|
       File.extname(path).in? [
         '.html', '.erb', '.haml',                 # Templates
