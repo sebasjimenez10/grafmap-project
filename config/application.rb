@@ -22,6 +22,7 @@ module GrafmapRails
 
     # Adding bower components to rails assets pipeline
     config.assets.paths << Rails.root.join('vendor', 'assets', 'components')
+    config.assets.paths << Rails.root.join('vendor', 'assets', 'bower_components')
     # adding fonts to rails assets pipeline
     config.assets.paths << Rails.root.join('vendor', 'assets', 'fonts')
 
