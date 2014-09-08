@@ -13,3 +13,5 @@
 
 /vendor/assets/components/*
 /vendor/assets/bower_components/*
+
+/public/assets
