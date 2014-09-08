@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20140904023941) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "favorite_places", force: true do |t|
     t.string   "user_id"
     t.string   "category"
