@@ -1,6 +1,7 @@
 GrafMap
 ===============
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+
 Visit live version [here](http://blooming-island-5355.herokuapp.com/)
 
 Description
